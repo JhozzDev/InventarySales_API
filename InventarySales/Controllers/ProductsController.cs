@@ -29,6 +29,14 @@ namespace InventarySales.Controllers
                 return NotFound();
             return product;
         }
+
+        [HttpPost]
+        public ActionResult<Product> Create(Product product)
+        {
+            product.Id = Products.Max(p => p.Id) + 1;
+            Products.Add(product);
+            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+        }
     };
 
     
