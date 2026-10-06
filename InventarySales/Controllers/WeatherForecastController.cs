@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-
+using InventarySales.Models;    
 namespace InventarySales.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries =
@@ -22,5 +22,6 @@ namespace InventarySales.Controllers
             })
             .ToArray();
         }
-    }
+    };
+
 }
