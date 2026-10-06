@@ -3,7 +3,7 @@ using InventarySales.Models;
 namespace InventarySales.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries =

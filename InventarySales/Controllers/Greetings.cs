@@ -4,10 +4,10 @@ namespace InventarySales.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class GreetingController : ControllerBase
     {
-        [HttpGet(Name = "GetGreeting")]
+        [HttpGet(Name = "Greeting")]
         public string Get()
         {
             return "Hello, welcome to the InventarySales API!";

@@ -5,19 +5,31 @@ namespace InventarySales.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
         public static readonly List<Product> Products = new List<Product>
     {
-        new Product { Id = 1, Name = "Product 1", Price = 10.99, Stock = 10 },
-        new Product { Id = 2, Name = "Product 2", Price = 19.99, Stock = 5 },
-        new Product { Id = 3, Name = "Product 3", Price = 5.99, Stock = 20 }
+        new Product { Id = 1, Name = "Product 1", Price = 10.99m, Stock = 10 },
+        new Product { Id = 2, Name = "Product 2", Price = 19.99m, Stock = 5 },
+        new Product { Id = 3, Name = "Product 3", Price = 5.99m, Stock = 20 }
 };
         [HttpGet]
         public IEnumerable<Product> Get()
         {
             return Products;
         }
+
+        [HttpGet("{id}")]
+        public ActionResult<Product> GetById(int id)
+        {
+           
+            var product = Products.FirstOrDefault(product => product.Id == id);
+            if (product is null)
+                return NotFound();
+            return product;
+        }
     };
+
+    
 }
