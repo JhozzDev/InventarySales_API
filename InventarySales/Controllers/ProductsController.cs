@@ -5,7 +5,7 @@ namespace InventarySales.Controllers
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
         public static readonly List<Product> Products = new List<Product>
@@ -52,9 +52,9 @@ namespace InventarySales.Controllers
             var existingProduct = Products.FirstOrDefault(p => p.Id == id);
             if (existingProduct is null)
                 return NotFound();
-            Products.Remove(existingProduct);
-            product.Id = id;
-            Products.Add(product);
+            existingProduct.Name = product.Name;
+            existingProduct.Price = product.Price;
+            existingProduct.Stock = product.Stock;
             return NoContent();
         }
     };
