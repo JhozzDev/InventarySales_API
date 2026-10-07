@@ -1,63 +1,53 @@
 ﻿using InventarySales.Models;
 using Microsoft.AspNetCore.Mvc;
-
+using InventarySales.Services;
 namespace InventarySales.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
-        public static readonly List<Product> Products = new List<Product>
-    {
-        new Product { Id = 1, Name = "Product 1", Price = 10.99m, Stock = 10 },
-        new Product { Id = 2, Name = "Product 2", Price = 19.99m, Stock = 5 },
-        new Product { Id = 3, Name = "Product 3", Price = 5.99m, Stock = 20 }
-};
+
+        private readonly ProductsServices _services;
+
+        public ProductsController(ProductsServices services)
+        {
+            _services = services;
+        }
+
         [HttpGet]
         public IEnumerable<Product> Get()
         {
-            return Products;
+            return _services.GetAllProducts();
         }
 
         [HttpGet("{id}")]
         public ActionResult<Product> GetById(int id)
         {
-           
-            var product = Products.FirstOrDefault(product => product.Id == id);
+            var product = _services.GetProductById(id);
             if (product is null)
                 return NotFound();
-            return product;
+            return Ok(product);
         }
-
         [HttpPost]
-        public ActionResult<Product> Create(Product product)
+        public ActionResult AddProduct([FromBody] Product product)
         {
-            product.Id = Products.Max(p => p.Id) + 1;
-            Products.Add(product);
+            _services.AddProduct(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
+
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult DeleteProduct(int id)
         {
-            var product = Products.FirstOrDefault(product => product.Id == id);
-            if (product is null)
-                return NotFound();
-            Products.Remove(product);
+            _services.DeleteProduct(id);
             return NoContent();
         }
         [HttpPut("{id}")]
-        public ActionResult Update(int id, Product product)
+        public ActionResult UpdateProduct(int id, [FromBody] Product updatedProduct)
         {
-            var existingProduct = Products.FirstOrDefault(p => p.Id == id);
-            if (existingProduct is null)
-                return NotFound();
-            existingProduct.Name = product.Name;
-            existingProduct.Price = product.Price;
-            existingProduct.Stock = product.Stock;
+            _services.UpdateProduct(id, updatedProduct);
             return NoContent();
         }
-    };
-
-    
+    }
 }
