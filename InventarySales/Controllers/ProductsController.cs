@@ -37,6 +37,26 @@ namespace InventarySales.Controllers
             Products.Add(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
+        [HttpDelete("{id}")]
+        public ActionResult Delete(int id)
+        {
+            var product = Products.FirstOrDefault(product => product.Id == id);
+            if (product is null)
+                return NotFound();
+            Products.Remove(product);
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public ActionResult Update(int id, Product product)
+        {
+            var existingProduct = Products.FirstOrDefault(p => p.Id == id);
+            if (existingProduct is null)
+                return NotFound();
+            Products.Remove(existingProduct);
+            product.Id = id;
+            Products.Add(product);
+            return NoContent();
+        }
     };
 
     
