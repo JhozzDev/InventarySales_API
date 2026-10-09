@@ -1,11 +1,18 @@
 using InventarySales.Services;
+using InventarySales.DataBase;
+using Microsoft.EntityFrameworkCore;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
 
 builder.Services.AddScoped<ProductsServices>();
 builder.Services.AddControllers();
+builder.Services.AddDbContext<InventarySales.DataBase.DbContextApp>(options =>
+    options.UseSqlServer(connectionString));
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
