@@ -30,6 +30,14 @@ namespace InventarySales.Controllers
                 return NotFound();
             return Ok(product);
         }
+
+        [HttpGet("category/{category}")]
+        public ActionResult<IEnumerable<Product>> GetProductsByCategory(string category)
+        {
+            var products = _services.GetProductsByCategory(category);
+            return Ok(products);
+        }
+
         [HttpPost]
         public ActionResult AddProduct([FromBody] Product product)
         {

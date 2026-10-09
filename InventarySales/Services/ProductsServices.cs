@@ -4,9 +4,21 @@ namespace InventarySales.Services
     public class ProductsServices
     {
         private static List<Product> products = new List<Product>{
-            new Product { Id = 1, Name = "Product 1", Price = 10.99m, Stock = 100 },
-            new Product { Id = 2, Name = "Product 2", Price = 20.99m, Stock = 50 },
-            new Product { Id = 3, Name = "Product 3", Price = 15.99m, Stock = 75 }
+            new Product { Id = 1, Name = "Laptop", Price = 10.99m, Stock = 100, Category="Technology" },
+            new Product { Id = 2, Name = "Smartphone", Price = 20.99m, Stock = 50, Category="Electronics" },
+            new Product { Id = 3, Name = "Novel", Price = 15.99m, Stock = 75, Category="Books" },
+            new Product { Id = 4, Name = "Laptop", Price = 10.99m, Stock = 100, Category="Technology" },
+            new Product { Id = 5, Name = "Smartphone", Price = 20.99m, Stock = 50, Category="Electronics" },
+            new Product { Id = 6, Name = "Novel", Price = 15.99m, Stock = 75, Category="Books" },
+            new Product { Id = 7, Name = "Laptop", Price = 10.99m, Stock = 100, Category="Technology" },
+            new Product { Id = 8, Name = "Smartphone", Price = 20.99m, Stock = 50, Category="Electronics" },
+            new Product { Id = 9, Name = "Novel", Price = 15.99m, Stock = 75, Category="Books" },
+            new Product { Id = 10, Name = "Laptop", Price = 10.99m, Stock = 100, Category="Technology" },
+            new Product { Id = 11, Name = "Smartphone", Price = 20.99m, Stock = 50, Category="Electronics" },
+            new Product { Id = 12, Name = "Novel", Price = 15.99m, Stock = 75, Category="Books" },
+            new Product { Id = 13, Name = "Laptop", Price = 10.99m, Stock = 100, Category="Technology" },
+            new Product { Id = 14, Name = "Smartphone", Price = 20.99m, Stock = 50, Category="Electronics" },
+            new Product { Id = 15, Name = "Novel", Price = 15.99m, Stock = 75, Category="Books" }
         };
 
         
@@ -36,6 +48,11 @@ namespace InventarySales.Services
                 existingProduct.Price = updatedProduct.Price;
                 existingProduct.Stock = updatedProduct.Stock;
             }
+        }
+
+        public IEnumerable<Product> GetProductsByCategory(string category)
+        {
+            return products.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
         }
 
     }
