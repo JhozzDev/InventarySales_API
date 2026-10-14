@@ -1,14 +1,13 @@
 ﻿using InventarySales.Models;
-using Microsoft.AspNetCore.Mvc;
 using InventarySales.Services;
+using Microsoft.AspNetCore.Mvc;
+
 namespace InventarySales.Controllers
 {
-
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-
         private readonly ProductsServices _services;
 
         public ProductsController(ProductsServices services)
@@ -17,44 +16,45 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Product> Get()
+        public async Task<IEnumerable<Product>> Get()
         {
-            return _services.GetAllProducts();
+            return await _services.GetAllProductsAsync();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Product> GetById(int id)
+        public async Task<ActionResult<Product>> GetById(int id)
         {
-            var product = _services.GetProductById(id);
+            var product = await _services.GetProductByIdAsync(id);
             if (product is null)
                 return NotFound();
             return Ok(product);
         }
 
         [HttpGet("category/{category}")]
-        public ActionResult<IEnumerable<Product>> GetProductsByCategory(string category)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(string category)
         {
-            var products = _services.GetProductsByCategory(category);
+            var products = await _services.GetProductsByCategoryAsync(category);
             return Ok(products);
         }
 
         [HttpPost]
-        public ActionResult AddProduct([FromBody] Product product)
+        public async Task<ActionResult> AddProduct([FromBody] Product product)
         {
-            _services.AddProduct(product);
+            await _services.AddProductAsync(product);
             return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
         }
 
         [HttpDelete("{id}")]
-        public ActionResult DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            _services.DeleteProduct(id);
+            await _services.DeleteProductAsync(id);
             return NoContent();
         }
+
         [HttpPut("{id}")]
-        public ActionResult UpdateProduct(int id, [FromBody] Product updatedProduct)
+        public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product updatedProduct)
         {
-            _services.UpdateProduct(id, updatedProduct);
+            await _services.UpdateProductAsync(id, updatedProduct);
             return NoContent();
         }
     }

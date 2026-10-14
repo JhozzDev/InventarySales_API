@@ -6,47 +6,55 @@ namespace InventarySales.Services
 {
     public class ProductsServices
     {
-
         private readonly DbContextApp _context;
+
         public ProductsServices(DbContextApp context)
         {
             _context = context;
         }
 
-        public IEnumerable<Product> GetAllProducts() => _context.Products.ToList();
-        public Product? GetProductById(int id) => _context.Products.FirstOrDefault(p => p.Id == id);
-
-        public void AddProduct(Product product)
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            
+            return await _context.Products.ToListAsync();
+        }
+
+        public async Task<Product?> GetProductByIdAsync(int id)
+        {
+            return await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task AddProductAsync(Product product)
+        {
             _context.Products.Add(product);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void DeleteProduct(int id)
+        public async Task DeleteProductAsync(int id)
         {
-            var product = GetProductById(id);
+            var product = await GetProductByIdAsync(id);
             if (product is not null)
+            {
                 _context.Products.Remove(product);
-            _context.SaveChanges();
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public void UpdateProduct(int id, Product updatedProduct)
+        public async Task UpdateProductAsync(int id, Product updatedProduct)
         {
-            var existingProduct = GetProductById(id);
+            var existingProduct = await GetProductByIdAsync(id);
             if (existingProduct is not null)
             {
                 existingProduct.Name = updatedProduct.Name;
                 existingProduct.Price = updatedProduct.Price;
                 existingProduct.Stock = updatedProduct.Stock;
-                _context.SaveChanges();
+                existingProduct.Category = updatedProduct.Category;
+                await _context.SaveChangesAsync();
             }
         }
 
-        public IQueryable<Product> GetProductsByCategory(string category)
+        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(string category)
         {
-            return _context.Products.Where(p => p.Category == category);
+            return await _context.Products.Where(p => p.Category == category).ToListAsync();
         }
-
     }
 }
