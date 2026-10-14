@@ -43,9 +43,9 @@ namespace InventarySales.Services
             }
         }
 
-        public IEnumerable<Product> GetProductsByCategory(string category)
+        public IQueryable<Product> GetProductsByCategory(string category)
         {
-            return _context.Products.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+            return _context.Products.Where(p => p.Category == category);
         }
 
     }
