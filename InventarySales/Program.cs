@@ -10,6 +10,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Add services to the container.
 
 builder.Services.AddScoped<ProductsServices>();
+builder.Services.AddScoped<CategoryServices>();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<InventarySales.DataBase.DbContextApp>(options =>
     options.UseSqlServer(connectionString));

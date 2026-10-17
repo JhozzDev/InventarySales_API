@@ -25,8 +25,11 @@ namespace InventarySales.Services
 
         public async Task AddProductAsync(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            try {             _context.Products.Add(product);
+                              await _context.SaveChangesAsync();
+            }
+            catch { throw new Exception("Error occurred while adding the product."); }
+
         }
 
         public async Task DeleteProductAsync(int id)
@@ -54,7 +57,7 @@ namespace InventarySales.Services
 
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(string category)
         {
-            return await _context.Products.Where(p => p.Category == category).ToListAsync();
+            return await _context.Products.Where(p => p.Category.Name == category).ToListAsync();
         }
     }
 }
