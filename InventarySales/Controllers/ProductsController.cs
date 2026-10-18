@@ -1,7 +1,7 @@
 ﻿using InventarySales.Models;
 using InventarySales.Services;
 using Microsoft.AspNetCore.Mvc;
-
+using InventarySales.Dtos;
 namespace InventarySales.Controllers
 {
     [ApiController]
@@ -31,17 +31,37 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet("category/{category}")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(string category)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(int category)
         {
             var products = await _services.GetProductsByCategoryAsync(category);
             return Ok(products);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddProduct([FromBody] Product product)
+        public async Task<ActionResult> AddProduct([FromBody] ProductCreateDto product)
         {
-            await _services.AddProductAsync(product);
-            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+            if(product.CategoryId <= 0)
+            {
+                return BadRequest("CategoryId must be greater than 0.");
+            }   
+            var product2 = new Product
+            {
+                Name = product.Name,
+                Price = product.Price,
+                CategoryId = product.CategoryId,
+                Stock = product.Stock
+            };
+            await _services.AddProductAsync(product2);
+            return CreatedAtAction(nameof(GetById), new { id = product2.Id }, new ProductDto
+            {
+                Id = product2.Id,
+                Name = product2.Name,
+                Price = product2.Price,
+                Stock = product2.Stock,
+                CategoryId = product2.CategoryId    
+
+
+            });
         }
 
         [HttpDelete("{id}")]
@@ -52,9 +72,17 @@ namespace InventarySales.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product updatedProduct)
+        public async Task<ActionResult> UpdateProduct(int id, [FromBody] ProductCreateDto updatedProduct)
         {
-            await _services.UpdateProductAsync(id, updatedProduct);
+           var product = new Product
+           {
+               Id = id,
+               Name = updatedProduct.Name,
+               Price = updatedProduct.Price,
+               CategoryId = updatedProduct.CategoryId,
+               Stock = updatedProduct.Stock
+           };
+            await _services.UpdateProductAsync(id, product);
             return NoContent();
         }
     }
