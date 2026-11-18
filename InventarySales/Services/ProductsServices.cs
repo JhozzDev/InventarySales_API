@@ -31,17 +31,19 @@ namespace InventarySales.Services
 
         }
 
-        public async Task DeleteProductAsync(int id)
+        public async Task<bool> DeleteProductAsync(int id)
         {
             var product = await GetProductByIdAsync(id);
             if (product is not null)
             {
                 _context.Products.Remove(product);
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
-        public async Task UpdateProductAsync(int id, Product updatedProduct)
+        public async Task<bool> UpdateProductAsync(int id, Product updatedProduct)
         {
             var existingProduct = await GetProductByIdAsync(id);
             if (existingProduct is not null)
@@ -51,7 +53,9 @@ namespace InventarySales.Services
                 existingProduct.Stock = updatedProduct.Stock;
                 existingProduct.CategoryId = updatedProduct.CategoryId;
                 await _context.SaveChangesAsync();
+                return true;
             }
+            return false;
         }
 
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int category)

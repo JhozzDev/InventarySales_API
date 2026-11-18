@@ -40,10 +40,7 @@ namespace InventarySales.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct([FromBody] ProductCreateDto product)
         {
-            if(product.CategoryId <= 0)
-            {
-                return BadRequest("CategoryId must be greater than 0.");
-            }   
+  
             var product2 = new Product
             {
                 Name = product.Name,
@@ -67,7 +64,7 @@ namespace InventarySales.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
-            await _services.DeleteProductAsync(id);
+            if(!await _services.DeleteProductAsync(id)) return NotFound();
             return NoContent();
         }
 
@@ -82,7 +79,7 @@ namespace InventarySales.Controllers
                CategoryId = updatedProduct.CategoryId,
                Stock = updatedProduct.Stock
            };
-            await _services.UpdateProductAsync(id, product);
+            if(!await _services.UpdateProductAsync(id, product)) return NotFound();
             return NoContent();
         }
     }
