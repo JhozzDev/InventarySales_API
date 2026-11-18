@@ -16,31 +16,62 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Product>> Get()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> Get()
         {
-            return await _services.GetAllProductsAsync();
+            var products = await _services.GetAllProductsAsync();
+            var result = products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Stock = p.Stock,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category?.Name
+            });
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetById(int id)
+        public async Task<ActionResult<ProductDto>> GetById(int id)
         {
             var product = await _services.GetProductByIdAsync(id);
             if (product is null)
                 return NotFound();
-            return Ok(product);
+            return Ok(new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category?.Name
+            });
         }
 
         [HttpGet("category/{category}")]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByCategory(int category)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategory(int category)
         {
             var products = await _services.GetProductsByCategoryAsync(category);
-            return Ok(products);
+            return Ok(products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Stock = p.Stock,
+                CategoryId = p.CategoryId,
+                CategoryName = p.Category?.Name
+            }));
         }
 
         [HttpPost]
         public async Task<ActionResult> AddProduct([FromBody] ProductCreateDto product)
         {
-  
+            if (!await _services.CategoryExistsAsync(product.CategoryId))
+                return UnprocessableEntity(new
+                {
+                    message = $"La categoría {product.CategoryId} no existe."
+                });
+
             var product2 = new Product
             {
                 Name = product.Name,
@@ -55,7 +86,8 @@ namespace InventarySales.Controllers
                 Name = product2.Name,
                 Price = product2.Price,
                 Stock = product2.Stock,
-                CategoryId = product2.CategoryId    
+                CategoryId = product2.CategoryId   ,
+                CategoryName = product2.Category?.Name
 
 
             });
@@ -71,7 +103,13 @@ namespace InventarySales.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateProduct(int id, [FromBody] ProductCreateDto updatedProduct)
         {
-           var product = new Product
+            if (!await _services.CategoryExistsAsync(updatedProduct.CategoryId))
+                return UnprocessableEntity(new
+                {
+                    message = $"La categoría {updatedProduct.CategoryId} no existe."
+                });
+
+            var product = new Product
            {
                Id = id,
                Name = updatedProduct.Name,
