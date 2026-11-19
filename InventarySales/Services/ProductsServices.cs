@@ -1,4 +1,6 @@
-﻿using InventarySales.DataBase;
+﻿using InventarySales.Common;
+using InventarySales.DataBase;
+using InventarySales.Dtos;
 using InventarySales.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,9 +15,20 @@ namespace InventarySales.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<PagedResult<Product>> GetAllProductsAsync(int Page, int PageSize)
         {
-            return await _context.Products.Include(p => p.Category).ToListAsync();
+            var count = await _context.Products.CountAsync();
+            var products = await _context.Products.Include(p => p.Category).AsNoTracking().OrderBy(p => p.Id)
+                .Skip((Page - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+            return new PagedResult<Product>
+            {
+                Items = products,
+                TotalCount = count,
+                Page = Page,
+                PageSize = PageSize
+            };
         }
         public async Task<bool> CategoryExistsAsync(int categoryId)
         {

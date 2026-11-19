@@ -1,3 +1,4 @@
+using InventarySales.Common;
 using InventarySales.Dtos;
 using InventarySales.Models;
 using InventarySales.Services;
@@ -17,15 +18,23 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> Get()
+        public async Task<ActionResult<PagedResult<CategoryDto>>> Get([FromQuery] int Page = 1, [FromQuery] int PageSize = 10)
         {
-            var categories = await _services.GetAllCategoriesAsync();
-            var result = categories.Select(c => new CategoryDto
+            
+            var categories = await _services.GetAllCategoriesAsync(Page, PageSize);
+          
+            var result = categories.Items.Select(c => new CategoryDto
             {
                 Id = c.Id,
                 Name = c.Name
             });
-            return Ok(result);
+            return Ok(new PagedResult<CategoryDto>
+            {
+                Items = result.ToList(),
+                TotalCount = categories.TotalCount,
+                Page = categories.Page,
+                PageSize = categories.PageSize
+            });
         }
 
         [HttpGet("{id}")]

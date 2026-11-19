@@ -2,6 +2,7 @@
 using InventarySales.Services;
 using Microsoft.AspNetCore.Mvc;
 using InventarySales.Dtos;
+using InventarySales.Common;
 namespace InventarySales.Controllers
 {
     [ApiController]
@@ -16,10 +17,10 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> Get()
+        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] int Page = 1, [FromQuery] int PageSize = 10)
         {
-            var products = await _services.GetAllProductsAsync();
-            var result = products.Select(p => new ProductDto
+            var products = await _services.GetAllProductsAsync(Page, PageSize);
+            var result = products.Items.Select(p => new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -28,9 +29,16 @@ namespace InventarySales.Controllers
                 CategoryId = p.CategoryId,
                 CategoryName = p.Category?.Name
             });
-            return Ok(result);
+            return Ok(new PagedResult<ProductDto>
+            {
+                Items = result.ToList(),
+                TotalCount = products.TotalCount,
+                Page = products.Page,
+                PageSize = products.PageSize
+            });
         }
 
+ 
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetById(int id)
         {
