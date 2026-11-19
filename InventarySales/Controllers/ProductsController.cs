@@ -1,14 +1,17 @@
-﻿using InventarySales.Models;
+﻿using InventarySales.Common;
+using InventarySales.Dtos;
+using InventarySales.Models;
 using InventarySales.Services;
 using Microsoft.AspNetCore.Mvc;
-using InventarySales.Dtos;
-using InventarySales.Common;
+using System.Linq.Expressions;
 namespace InventarySales.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
+
+        private static readonly string[] AllowedSorts = ["id", "name", "price", "stock"];
         private readonly ProductsServices _services;
 
         public ProductsController(ProductsServices services)
@@ -17,9 +20,15 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] PaginationParams Params)
-            {
-            var products = await _services.GetAllProductsAsync(Params);
+        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] PaginationParams Params, [FromQuery] decimal? maxPrice, [FromQuery] decimal? minPrice, [FromQuery] int? CategoryId, [FromQuery] string? SearchTerm, [FromQuery] string? sortBy = "id")
+        {
+
+         if (!string.IsNullOrWhiteSpace(sortBy) &&
+        !AllowedSorts.Contains(sortBy.ToLowerInvariant()))
+                return BadRequest(new { message = $"sortBy no válido: {sortBy}" });
+
+            var products = await _services.GetAllProductsAsync(Params, maxPrice, minPrice, CategoryId, SearchTerm, sortBy);
+            
             var result = products.Items.Select(p => new ProductDto
             {
                 Id = p.Id,

@@ -16,8 +16,9 @@ namespace InventarySales.Services
 
         public async Task<PagedResult<Category>> GetAllCategoriesAsync(PaginationParams Params)
         {
-            var count = await _context.Categories.CountAsync();
-            var result = await _context.Categories.AsNoTracking().OrderBy(c => c.Id).Skip((Params.Page - 1) * Params.PageSize)
+            IQueryable<Category> query = _context.Categories.AsQueryable();
+            var count = await query.CountAsync();
+            var result = await query.AsNoTracking().OrderBy(c => c.Id).Skip((Params.Page - 1) * Params.PageSize)
                 .Take(Params.PageSize)
                 .ToListAsync();
             return new PagedResult<Category>
