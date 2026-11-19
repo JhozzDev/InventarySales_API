@@ -17,9 +17,9 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] int Page = 1, [FromQuery] int PageSize = 10)
-        {
-            var products = await _services.GetAllProductsAsync(Page, PageSize);
+        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] PaginationParams Params)
+            {
+            var products = await _services.GetAllProductsAsync(Params);
             var result = products.Items.Select(p => new ProductDto
             {
                 Id = p.Id,
@@ -57,9 +57,9 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet("category/{category}")]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategory(int category)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategory(int category, [FromQuery] PaginationParams Params)
         {
-            var products = await _services.GetProductsByCategoryAsync(category);
+            var products = await _services.GetProductsByCategoryAsync(category, Params);
             return Ok(products.Select(p => new ProductDto
             {
                 Id = p.Id,

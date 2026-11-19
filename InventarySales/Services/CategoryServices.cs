@@ -1,30 +1,31 @@
 ﻿using InventarySales.Common;
 using InventarySales.DataBase;
+using InventarySales.Dtos;
 using InventarySales.Models;
 using Microsoft.EntityFrameworkCore;
 namespace InventarySales.Services
 {
     public class CategoryServices
     {
-        private DbContextApp _context;
+        private readonly DbContextApp _context;
 
         public CategoryServices(DbContextApp context)
         {
             _context = context;
         }
 
-        public async Task<PagedResult<Category>> GetAllCategoriesAsync(int Page, int PageSize)
+        public async Task<PagedResult<Category>> GetAllCategoriesAsync(PaginationParams Params)
         {
             var count = await _context.Categories.CountAsync();
-            var result = await _context.Categories.AsNoTracking().OrderBy(c => c.Id).Skip((Page - 1) * PageSize)
-                .Take(PageSize)
+            var result = await _context.Categories.AsNoTracking().OrderBy(c => c.Id).Skip((Params.Page - 1) * Params.PageSize)
+                .Take(Params.PageSize)
                 .ToListAsync();
             return new PagedResult<Category>
             {
                 Items = result,
                 TotalCount = count,
-                Page = Page,
-                PageSize = PageSize
+                Page = Params.Page,
+                PageSize = Params.PageSize
         
             }; ;
         }

@@ -18,10 +18,10 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<CategoryDto>>> Get([FromQuery] int Page = 1, [FromQuery] int PageSize = 10)
+        public async Task<ActionResult<PagedResult<CategoryDto>>> Get([FromQuery] PaginationParams Params)
         {
             
-            var categories = await _services.GetAllCategoriesAsync(Page, PageSize);
+            var categories = await _services.GetAllCategoriesAsync(Params);
           
             var result = categories.Items.Select(c => new CategoryDto
             {

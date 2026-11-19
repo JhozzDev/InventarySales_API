@@ -15,19 +15,19 @@ namespace InventarySales.Services
             _context = context;
         }
 
-        public async Task<PagedResult<Product>> GetAllProductsAsync(int Page, int PageSize)
+        public async Task<PagedResult<Product>> GetAllProductsAsync(PaginationParams Params)
         {
             var count = await _context.Products.CountAsync();
             var products = await _context.Products.Include(p => p.Category).AsNoTracking().OrderBy(p => p.Id)
-                .Skip((Page - 1) * PageSize)
-                .Take(PageSize)
+                .Skip((Params.Page - 1) * Params.PageSize)
+                .Take(Params.PageSize)
                 .ToListAsync();
             return new PagedResult<Product>
             {
                 Items = products,
                 TotalCount = count,
-                Page = Page,
-                PageSize = PageSize
+                Page = Params.Page,
+                PageSize = Params.PageSize
             };
         }
         public async Task<bool> CategoryExistsAsync(int categoryId)
@@ -75,9 +75,12 @@ namespace InventarySales.Services
             return false;
         }
 
-        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int category)
+        public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int category, PaginationParams Params)
         {
-            return await _context.Products.Include(p => p.Category).Where(p => p.CategoryId == category).ToListAsync();
+            return await _context.Products.Include(p => p.Category).Where(p => p.CategoryId == category)
+                .Skip((Params.Page - 1) * Params.PageSize)
+                .Take(Params.PageSize)
+                .ToListAsync();
         }
 
      
