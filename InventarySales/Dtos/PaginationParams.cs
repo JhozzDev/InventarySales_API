@@ -13,7 +13,7 @@ namespace InventarySales.Dtos
         public int PageSize
         {
             get => _pageSize;
-            set => _pageSize = Math.Clamp(value, 10, MaxPageSize);
+            set => _pageSize = Math.Clamp(value, 1, MaxPageSize);
         }
     }
 }

@@ -20,14 +20,14 @@ namespace InventarySales.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] PaginationParams Params, [FromQuery] decimal? maxPrice, [FromQuery] decimal? minPrice, [FromQuery] int? CategoryId, [FromQuery] string? SearchTerm, [FromQuery] string? sortBy = "id")
+        public async Task<ActionResult<PagedResult<ProductDto>>> Get([FromQuery] PaginationParams Params, [FromQuery] decimal? maxPrice, [FromQuery] decimal? minPrice, [FromQuery] int? CategoryId, [FromQuery] string? SearchTerm, [FromQuery] string? sortBy = "id", [FromQuery] bool? ascending = true)
         {
 
          if (!string.IsNullOrWhiteSpace(sortBy) &&
         !AllowedSorts.Contains(sortBy.ToLowerInvariant()))
                 return BadRequest(new { message = $"sortBy no válido: {sortBy}" });
 
-            var products = await _services.GetAllProductsAsync(Params, maxPrice, minPrice, CategoryId, SearchTerm, sortBy);
+            var products = await _services.GetAllProductsAsync(Params, maxPrice, minPrice, CategoryId, SearchTerm, sortBy, ascending);
             
             var result = products.Items.Select(p => new ProductDto
             {

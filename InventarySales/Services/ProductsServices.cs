@@ -2,6 +2,7 @@
 using InventarySales.DataBase;
 using InventarySales.Dtos;
 using InventarySales.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -10,31 +11,45 @@ namespace InventarySales.Services
     public class ProductsServices
     {
         private readonly DbContextApp _context;
-        private static readonly Dictionary<string, Expression<Func<Product, object>>> SortMap = new()
-        {
-            ["id"] = p => p.Id,
-            ["name"] = p => p.Name,
-            ["price"] = p => p.Price,
-            ["stock"] = p => p.Stock
-        };
+    
 
         public ProductsServices(DbContextApp context)
         {
             _context = context;
         }
 
-        public async Task<PagedResult<Product>> GetAllProductsAsync(PaginationParams Params, decimal? MaxPrice, decimal? MinPrice, int? CategoryId, string? SearchTerm, string? sortBy)
+        public async Task<PagedResult<Product>> GetAllProductsAsync(PaginationParams Params,  decimal? MaxPrice, decimal? MinPrice, int? CategoryId, string? SearchTerm, string? sortBy, bool? ascending)
         {
 
+            string key = sortBy?.ToLowerInvariant() ?? "id";
 
             IQueryable<Product> query = _context.Products.Where(p => (!MaxPrice.HasValue || p.Price <= MaxPrice) &&
                                                               (!MinPrice.HasValue || p.Price >= MinPrice) &&
                                                               (!CategoryId.HasValue || p.CategoryId == CategoryId) &&
                                                               (string.IsNullOrEmpty(SearchTerm) || p.Name.Contains(SearchTerm)));
-                
-            var products = await query 
+
+
+            switch (key)
+            {
+                case "id":
+                    query = ascending == true ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id);
+                    break;
+                case "price":
+                    query = ascending == true ? query.OrderBy(p => p.Price).ThenBy(p => p.Id) : query.OrderByDescending(p => p.Price).ThenByDescending(p => p.Id);
+                    break;
+                case "name":
+                    query = ascending == true ? query.OrderBy(p => p.Name).ThenBy(p => p.Id) : query.OrderByDescending(p => p.Name).ThenByDescending(p => p.Id);
+                    break;
+                case "stock":
+                    query = ascending == true ? query.OrderBy(p => p.Stock).ThenBy(p => p.Id) : query.OrderByDescending(p => p.Stock).ThenByDescending(p => p.Id);
+                    break;
+                default:
+                    query = ascending == true ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id);
+                    break;
+            }
+         
+        var products = await query 
                 .Include(p => p.Category)
-                .OrderBy(SortMap[sortBy])
                 .AsNoTracking()
                 .Skip((Params.Page - 1) * Params.PageSize)
                 .Take(Params.PageSize)
