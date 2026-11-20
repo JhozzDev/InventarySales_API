@@ -111,6 +111,24 @@ namespace InventarySales.Services
             return false;
         }
 
+        public async Task<bool> PatchProductAsync(int id, decimal? price, int? stock)
+        {
+            var existingProduct = await GetProductByIdAsync(id);
+            if (existingProduct is null) return false;
+               if(price.HasValue)
+                {
+                    existingProduct.Price = price.Value;
+                }
+                if(stock.HasValue)
+                {
+                    existingProduct.Stock = stock.Value;
+                }
+              
+            await _context.SaveChangesAsync();
+     
+            
+            return true;
+        }
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int category, PaginationParams Params)
         {
             return await _context.Products.Include(p => p.Category).Where(p => p.CategoryId == category).OrderBy(p => p.Id)

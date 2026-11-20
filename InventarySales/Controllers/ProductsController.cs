@@ -137,5 +137,14 @@ namespace InventarySales.Controllers
             if(!await _services.UpdateProductAsync(id, product)) return NotFound();
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> PatchProduct(int id, [FromBody] ProductPatchDto patch)
+        {
+            if (!await _services.PatchProductAsync(id, patch.Price, patch.Stock))
+                return NotFound();
+
+            return NoContent();
+        }
     }
 }
