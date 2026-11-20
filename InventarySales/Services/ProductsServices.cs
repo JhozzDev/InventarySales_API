@@ -20,8 +20,9 @@ namespace InventarySales.Services
 
         public async Task<PagedResult<Product>> GetAllProductsAsync(PaginationParams Params,  decimal? MaxPrice, decimal? MinPrice, int? CategoryId, string? SearchTerm, string? sortBy, bool? ascending)
         {
+            
 
-            string key = sortBy?.ToLowerInvariant() ?? "id";
+        string key = sortBy?.ToLowerInvariant() ?? "id";
 
             IQueryable<Product> query = _context.Products.Where(p => (!MaxPrice.HasValue || p.Price <= MaxPrice) &&
                                                               (!MinPrice.HasValue || p.Price >= MinPrice) &&
